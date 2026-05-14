@@ -1,0 +1,33 @@
+server_name: "sub.yourdomain.com" # this will show your server/domain you entered in the compose file
+pid_file: /data/homeserver.pid
+listeners:
+  - port: 8008
+    resources:
+    - compress: false
+      names:
+      - client
+      - federation
+    tls: false
+    type: http
+    x_forwarded: true
+database:  # replace with postgres
+  name: psycopg2
+  txn_limit: 10000
+  args:
+    user: synapse
+    password: password # make a complex and unguessable password and matches the password in compose file
+    database: synapse
+    host: container_name_of_postgres # make sure you use the name of the container of postgres for this value
+    port: 5432
+    cp_min: 5
+    cp_max: 10
+log_config: "/data/sub.yourdomain.com.log.config" # this will show your server/domain you entered in the compose file
+media_store_path: /data/media_store
+registration_shared_secret: "Z1.95-ai=8amdU1WJ0oEQotYq_gPu_AXoqmUvOG=nfSmyr,t5v" # Replace with your shared secret
+enable_registration: false # you will need to add this value, its not here by default
+report_stats: false
+macaroon_secret_key: "E9EjGI9YNBmJwdz,H;cG0ltMOx-&.JOw469&up#9L:UChDp7fu" # Replace your macaroon secret
+form_secret: "7Q9n3fq#Co;KPs~o*V5QgQDVMzWR9Y1pDvgpJQUqPRz4LQf4Jw"  # Replace with your secret
+signing_key_path: "/data/sub.yourdomain.com.signing.key" # this will show your server/domain you entered in the compose file
+trusted_key_servers:
+  - server_name: "matrix.org"

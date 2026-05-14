@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+  synapse:
+    image: matrixdotorg/synapse:latest
+    command: generate
+    environment:
+      SYNAPSE_SERVER_NAME: "im.rehomelabs.com" # enter your sub.yourdomain.com
+      SYNAPSE_REPORT_STATS: "no"
+    volumes:
+      - ./synapse/data:/data
