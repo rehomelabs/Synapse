@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  synapse:
+    image: docker.io/matrixdotorg/synapse:latest
+    container_name: matrix-synapse
+    restart: unless-stopped
+    environment:
+      - SYNAPSE_CONFIG_PATH=/data/homeserver.yaml
+    volumes:
+      - /home/antari/matrix/synapse/data:/data  # update with your user path
+    depends_on:
+      - synapse_db
+    networks:
+      - frontend # external docker network to access Traefik
+      - default
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.synapse.tls=true
+      - traefik.http.routers.synapse.tls.certresolver=cloudflare # change name of what your provider is named in traefik.yaml
+      - traefik.http.routers.synapse.entrypoints=websecure
+      - traefik.http.routers.https-synapse.service=synapse
+      - traefik.http.services.synapse.loadbalancer.server.port=8008
+      - traefik.http.routers.synapse.rule=Host(`sub.yourdomain.com`) # enter what you put for server name in synapse config file
+  synapse_db:
+    image: docker.io/postgres:16-alpine
+    container_name: matrix-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+    volumes:
+      - synapse_db_data:/var/lib/postgresql/data
+
+
+volumes:
+  synapse_data:
+  synapse_db_data:
+
+networks:
+  frontend:
+    external: true
+  matrix_default:
